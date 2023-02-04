@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.120.1/build/three.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@17.0.0/dist/tween.esm.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      // Initialize the scene
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      var renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.getElementById("container").appendChild(renderer.domElement);
+      
+      // Create the globe
+      var sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+      var sphereTexture = new THREE.TextureLoader().load("https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/land_ocean_ice_cloud_2048.jpg");
+      var sphereMaterial = new THREE.MeshLambertMaterial({ map: sphereTexture });
+      var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      scene.add(sphere);
+      camera.position.z = 12;
+
+      // Add a point light to the scene to simulate the sun's light
+      var light = new THREE.PointLight(0xFEFFE2, 2, 100);
+      light.position.set(10, 10, 10);
+      scene.add(light);
+
+      
+      // Add click and drag event listeners to control the rotation
+      var dragging = false;
+      var previousMousePosition = { x: 0, y: 0 };
+      document.addEventListener("mousedown", function(e) {
+        dragging = true;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+      document.addEventListener("mouseup", function(e) {
+        dragging = false;
+      });
+      document.addEventListener("mousemove", function(e) {
+        if (dragging) {
+          var deltaX = e.clientX - previousMousePosition.x;
+          var deltaY = e.clientY - previousMousePosition.y;
+          sphere.rotation.x += deltaY * 0.01;
+          sphere.rotation.y -= deltaX * 0.01;
+          previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
+      });
+      
+      // Render the scene
+      function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+      render();
+    </script>
+  </body>
+</html>
